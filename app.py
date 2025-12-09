@@ -1,20 +1,9 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, Response
+from flask import Flask, request, render_template, redirect, url_for, flash, Response, send_from_directory
 from datetime import datetime
 import os
 import configparser
+
 app = Flask(__name__)
-
-from flask import send_from_directory
-
-@app.route('/home/google77b51b745d5d14fa.html')
-def google_verify_home():
-    return send_from_directory('.', 'google77b51b745d5d14fa.html')
-
-
-from flask import Flask
-import configparser
-import os
-
 
 # 讀 config.ini
 config = configparser.ConfigParser()

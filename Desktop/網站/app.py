@@ -1,30 +1,33 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, Response
 from datetime import datetime
 import os
-
+import configparser
 app = Flask(__name__)
 
 
-@app.route('/sitemap.xml')
-def sitemap():
-    urls = [
-        url_for('home', _external=True),
-        url_for('contact', _external=True),
-        url_for('page', name='Alice', _external=True),
-        url_for('page', name='Bob', _external=True)
-    ]
+from flask import Flask
+import configparser
+import os
 
-    sitemap_xml = ['<?xml version="1.0" encoding="UTF-8"?>']
-    sitemap_xml.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+app = Flask(__name__)
 
-    for url in urls:
-        sitemap_xml.append('<url>')
-        sitemap_xml.append(f'<loc>{url}</loc>')
-        sitemap_xml.append('</url>')
+# 讀 config.ini
+config = configparser.ConfigParser()
+config_path = os.path.join(os.path.dirname(__file__), "config.ini")
+with open(config_path, encoding="utf-8") as f:
+    config.read_file(f)
 
-    sitemap_xml.append('</urlset>')
+# 使用設定
+app.secret_key = config["app"]["secret_key"]
+debug_mode = config["app"].getboolean("debug")
 
-    return Response('\n'.join(sitemap_xml), mimetype='application/xml')
+@app.route("/")
+def home():
+    return "首頁"
+
+if __name__ == "__main__":
+    app.run(debug=debug_mode)
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "dev-secret-key")  # set env var in production
 

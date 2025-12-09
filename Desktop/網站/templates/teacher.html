@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="teacher">
+<h1>老師頁面</h1>
+<p>名字：<strong>施展</strong></p>
+<img src="{{ url_for('static', filename='螢幕擷取畫面 2025-12-08 190726.png') }}" alt="老師資料" width="300">
+    <div class="description-box">
+        <h2>{{ name }}</h2>
+        <p>這是老師的照片，教授數學科目</p>
+        <p>其他資訊可以放在這裡，例如辦公室、聯絡方式</p>
+    </div>
+</div>
+{% endblock %}
+

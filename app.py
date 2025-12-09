@@ -6,8 +6,8 @@ app = Flask(__name__)
 
 from flask import send_from_directory
 
-@app.route('/google77b51b745d5d14fa.html')
-def google_verify():
+@app.route('/home/google77b51b745d5d14fa.html')
+def google_verify_home():
     return send_from_directory('.', 'google77b51b745d5d14fa.html')
 
 

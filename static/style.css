@@ -1,0 +1,128 @@
+/* 共用背景 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+    background: linear-gradient(to bottom, #3399ff, #ffffff);
+}
+
+/* 首頁置中 */
+.home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 垂直置中 */
+    align-items: center;     /* 水平置中 */
+    text-align: center;      /* 文字置中 */
+}
+
+/* 其他頁面靠左 */
+.student_test {
+    display: block;          /* 恢復普通流式佈局 */
+    padding: 40px;           /* 與邊界保持距離 */
+    text-align: left;        /* 文字靠左 */
+}
+/* 其他頁面靠左 */
+.teacher {
+    display: flow;          /* 恢復普通流式佈局 */
+    padding: 40px;           /* 與邊界保持距離 */
+    text-align: left;        /* 文字靠左 */
+}
+/* =======================================
+   老師區塊的圖片樣式
+   ======================================= */
+.teacher img {
+    display: block;                /* 圖片換行顯示 */
+    margin: 20px 0;             /* 上下間距20px，水平置中 */
+    border-radius: 10px;           /* 圓角10px */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* 陰影效果 */
+}
+.description-box {
+    background-color: #f0f0f0;   /* 方格背景色 */
+    padding: 15px;               /* 文字與邊界間距 */
+    border-radius: 8px;          /* 圓角 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 小陰影 */
+}
+
+.description-box h2 {
+    margin: 0 0 10px 0;          /* 標題與文字間距 */
+}
+
+.description-box p {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+
+
+
+header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+main {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.button {
+    display: inline-block;      /* 讓按鈕可以水平置中 */
+    padding: 15px 30px;         /* 按鈕內距 */
+    border: 1px solid #222;     /* 邊框 */
+    color: #222;                /* 文字顏色 */
+    text-decoration: none;      /* 去掉底線 */
+    border-radius: 4px;         /* 圓角 */
+    transition: 0.2s ease;      /* 滑鼠效果平滑過渡 */
+    margin-top: 20px;           /* 與上方文字間距 */
+    font-size: 24px;            /* 字體變大 */
+    font-weight: bold; /* 可選，加粗文字 */
+}
+
+/* 滑鼠移到按鈕 */
+.button:hover {
+    background-color: #222;
+    color: white;
+    transform: scale(1.05);    /* 放大一點 */
+}
+
+/* 給每個按鈕右邊加間距 */
+.button + .button {
+    margin-left: 20px; /* 第二個按鈕距離第一個 20px */
+}
+
+.button2 {
+    display: inline-block;      /* 讓按鈕可以水平置中 */
+    padding: 15px 30px;         /* 按鈕內距 */
+    border: 1px solid #222;     /* 邊框 */
+    color: #222;                /* 文字顏色 */
+    text-decoration: none;      /* 去掉底線 */
+    border-radius: 4px;         /* 圓角 */
+    transition: 0.2s ease;      /* 滑鼠效果平滑過渡 */
+    margin-top: 20px;           /* 與上方文字間距 */
+    font-size: 24px;            /* 字體變大 */
+    font-weight: bold; /* 可選，加粗文字 */
+}
+
+/* 滑鼠移到按鈕 */
+.button2:hover {
+    background-color: #222;
+    color: white;
+    transform: scale(1.05);    /* 放大一點 */
+}
+
+h1, h2 {
+    font-weight: 600;
+    color: #111;
+}
+
+p {
+    color: #333;
+}

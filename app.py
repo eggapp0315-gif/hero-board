@@ -15,7 +15,6 @@ from flask import Flask
 import configparser
 import os
 
-app = Flask(__name__)
 
 # 讀 config.ini
 config = configparser.ConfigParser()
@@ -55,6 +54,10 @@ def log_visit(path="/"):
     with open(VISITORS_FILE, "a", encoding="utf-8") as f:
         f.write(line)
 
+
+@app.route('/home/google77b51b745d5d14fa.html')
+def google_verify_home():
+    return send_from_directory('.', 'google77b51b745d5d14fa.html')
 @app.route("/")
 def index():
     return redirect(url_for("home"))

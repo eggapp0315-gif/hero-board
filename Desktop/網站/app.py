@@ -1,7 +1,30 @@
-from flask import Flask, request, render_template, redirect, url_for, flash
+from flask import Flask, request, render_template, redirect, url_for, flash, Response
 from datetime import datetime
 import os
 
+app = Flask(__name__)
+
+
+@app.route('/sitemap.xml')
+def sitemap():
+    urls = [
+        url_for('home', _external=True),
+        url_for('contact', _external=True),
+        url_for('page', name='Alice', _external=True),
+        url_for('page', name='Bob', _external=True)
+    ]
+
+    sitemap_xml = ['<?xml version="1.0" encoding="UTF-8"?>']
+    sitemap_xml.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+
+    for url in urls:
+        sitemap_xml.append('<url>')
+        sitemap_xml.append(f'<loc>{url}</loc>')
+        sitemap_xml.append('</url>')
+
+    sitemap_xml.append('</urlset>')
+
+    return Response('\n'.join(sitemap_xml), mimetype='application/xml')
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "dev-secret-key")  # set env var in production
 

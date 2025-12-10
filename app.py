@@ -1,16 +1,14 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, Response, send_from_directory, abort
-import  logging
+from flask import Flask, request, render_template, redirect, url_for, flash, send_from_directory, abort
 from datetime import datetime
 import os
 import configparser
-from datetime import datetime
-
 
 app = Flask(__name__)
 
-log = logging.getLogger('werkzeug')
-log.disabled = True
-VISITORS_FILE = "visitors.txt"
+# ---------------------------
+# 訪客紀錄檔案
+# ---------------------------
+VISITORS_FILE = os.path.join(os.path.dirname(__file__), "visitors.txt")
 
 def get_real_ip():
     xff = request.headers.get("X-Forwarded-For", "")
@@ -18,114 +16,45 @@ def get_real_ip():
         return xff.split(",")[0].strip()
     return request.remote_addr or "unknown"
 
-
-# ---------------------------
-#   記錄訪客
-# ---------------------------
 def log_visit(path="/"):
     ip = get_real_ip()
     ua = request.headers.get("User-Agent", "-")
     now = datetime.utcnow().isoformat() + "Z"
-    line = f"{now}\t{ip}\t{path}\t{ua}\n"
     with open(VISITORS_FILE, "a", encoding="utf-8") as f:
-        f.write(line)
+        f.write(f"{now}\t{ip}\t{path}\t{ua}\n")
 
-def get_real_ip():
-    # Render / Nginx / Proxy 支援 X-Forwarded-For（取第1個 IP）
-    xff = request.headers.get("X-Forwarded-For", "")
-    if xff:
-        return xff.split(",")[0].strip()
+# ---------------------------
+# 防止無效請求
+# ---------------------------
+@app.before_request
+def block_invalid_protocol():
+    try:
+        request.data
+    except Exception:
+        return abort(400)
 
-    # 本地啟動 Flask 時使用 request.remote_addr
-    return request.remote_addr or "unknown"
-
-
-def log_visit(path):
-    ip = get_real_ip()
-    ua = request.headers.get("User-Agent", "unknown")
-    time_now = datetime.utcnow().isoformat() + "Z"
-
-    with open(VISITORS_FILE, "a", encoding="utf-8") as f:
-        f.write(f"{time_now}\t{ip}\t{path}\t{ua}\n")
-
-# 讀 config.ini
+# ---------------------------
+# 設定 secret key
+# ---------------------------
 config = configparser.ConfigParser()
 config_path = os.path.join(os.path.dirname(__file__), "config.ini")
 with open(config_path, encoding="utf-8") as f:
     config.read_file(f)
 
-# 使用設定
 app.secret_key = config["app"]["secret_key"]
-debug_mode = config["app"].getboolean("debug")
 
-@app.route("/")
-def home():
-    return "首頁"
-
-if __name__ == "__main__":
-    app.run(debug=debug_mode)
-
-app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET", "dev-secret-key")  # set env var in production
-
-VISITORS_FILE = "visitors.txt"
-
-def get_remote_addr():
-    # 如果在 ngrok 或反向 proxy 下，X-Forwarded-For 會有原始 IP
-    xff = request.headers.get("X-Forwarded-For", "")
-    if xff:
-        # 可能是一串 IP，取第一個
-        return xff.split(",")[0].strip()
-    return request.remote_addr or "unknown"
-
-def log_visit(path="/"):
-    ip = get_remote_addr()
-    ua = request.headers.get("User-Agent", "-")
-    now = datetime.utcnow().isoformat() + "Z"
-    line = f"{now}\t{ip}\t{path}\t{ua}\n"
-    with open(VISITORS_FILE, "a", encoding="utf-8") as f:
-        f.write(line)
-
-
-
-
-@app.before_request
-def block_invalid_protocol():
-    try:
-        request.data  # 強制解析
-    except Exception:
-        return abort(400)
-
-
-@app.route('/home/google77b51b745d5d14fa.html')
-def google_verify_home():
-    return send_from_directory('.', 'google77b51b745d5d14fa.html')
+# ---------------------------
+# 路由
+# ---------------------------
 @app.route("/")
 def index():
-    log_visit("/home")
+    log_visit("/")
     return redirect(url_for("home"))
-
-# @app.route("/contact")
-# def contact():
-#     log_visit("/contact")
-#     return render_template("contact.html")
 
 @app.route("/home")
 def home():
     log_visit("/home")
     return render_template("home.html")
-
-@app.route("/<name>")
-def page(name):
-    log_visit(f"/{name}")
-    # 小心 name 的輸出，Jinja 會自動 escape
-    return render_template("page.html", name=name)
-
-@app.route("/material/<name>")
-def teacher(name):
-    log_visit(f"/{name}")
-    # 小心 name 的輸出，Jinja 會自動 escape
-    return render_template("teacher.html", name=name)
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
@@ -134,7 +63,6 @@ def contact():
         name = request.form.get("name", "")
         email = request.form.get("email", "")
         message = request.form.get("message", "")
-        # 寫入訊息紀錄
         with open("messages.txt", "a", encoding="utf-8") as f:
             f.write(f"{datetime.utcnow().isoformat()}Z\t{name}\t{email}\t{message}\n")
         flash("感謝你的訊息，我們已收到！")
@@ -143,12 +71,22 @@ def contact():
         log_visit("/contact (GET)")
         return render_template("contact.html")
 
+@app.route("/<name>")
+def page(name):
+    log_visit(f"/{name}")
+    return render_template("page.html", name=name)
 
+@app.route("/material/<name>")
+def teacher(name):
+    log_visit(f"/{name}")
+    return render_template("teacher.html", name=name)
+
+@app.route('/home/google77b51b745d5d14fa.html')
+def google_verify_home():
+    return send_from_directory('.', 'google77b51b745d5d14fa.html')
+
+# ---------------------------
+# 啟動 Flask
+# ---------------------------
 if __name__ == "__main__":
-    # debug=True 方便開發；正式部署請改為 False 並用 WSGI server
     app.run(host="0.0.0.0", port=5000, debug=False)
-
-
-#ngrok http 5000這個要執行用cmd
-
-

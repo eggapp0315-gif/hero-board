@@ -3,11 +3,51 @@ import  logging
 from datetime import datetime
 import os
 import configparser
+from datetime import datetime
+
 
 app = Flask(__name__)
 
 log = logging.getLogger('werkzeug')
 log.disabled = True
+VISITORS_FILE = "visitors.txt"
+
+def get_real_ip():
+    xff = request.headers.get("X-Forwarded-For", "")
+    if xff:
+        return xff.split(",")[0].strip()
+    return request.remote_addr or "unknown"
+
+
+# ---------------------------
+#   記錄訪客
+# ---------------------------
+def log_visit(path="/"):
+    ip = get_real_ip()
+    ua = request.headers.get("User-Agent", "-")
+    now = datetime.utcnow().isoformat() + "Z"
+    line = f"{now}\t{ip}\t{path}\t{ua}\n"
+    with open(VISITORS_FILE, "a", encoding="utf-8") as f:
+        f.write(line)
+
+def get_real_ip():
+    # Render / Nginx / Proxy 支援 X-Forwarded-For（取第1個 IP）
+    xff = request.headers.get("X-Forwarded-For", "")
+    if xff:
+        return xff.split(",")[0].strip()
+
+    # 本地啟動 Flask 時使用 request.remote_addr
+    return request.remote_addr or "unknown"
+
+
+def log_visit(path):
+    ip = get_real_ip()
+    ua = request.headers.get("User-Agent", "unknown")
+    time_now = datetime.utcnow().isoformat() + "Z"
+
+    with open(VISITORS_FILE, "a", encoding="utf-8") as f:
+        f.write(f"{time_now}\t{ip}\t{path}\t{ua}\n")
+
 # 讀 config.ini
 config = configparser.ConfigParser()
 config_path = os.path.join(os.path.dirname(__file__), "config.ini")
@@ -62,7 +102,13 @@ def google_verify_home():
     return send_from_directory('.', 'google77b51b745d5d14fa.html')
 @app.route("/")
 def index():
+    log_visit("/home")
     return redirect(url_for("home"))
+
+# @app.route("/contact")
+# def contact():
+#     log_visit("/contact")
+#     return render_template("contact.html")
 
 @app.route("/home")
 def home():
@@ -88,7 +134,7 @@ def contact():
         name = request.form.get("name", "")
         email = request.form.get("email", "")
         message = request.form.get("message", "")
-        # 這裡你可以把表單寫入檔案或寄信（示範寫檔案）
+        # 寫入訊息紀錄
         with open("messages.txt", "a", encoding="utf-8") as f:
             f.write(f"{datetime.utcnow().isoformat()}Z\t{name}\t{email}\t{message}\n")
         flash("感謝你的訊息，我們已收到！")
@@ -96,6 +142,7 @@ def contact():
     else:
         log_visit("/contact (GET)")
         return render_template("contact.html")
+
 
 if __name__ == "__main__":
     # debug=True 方便開發；正式部署請改為 False 並用 WSGI server

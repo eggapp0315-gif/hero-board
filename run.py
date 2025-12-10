@@ -23,3 +23,14 @@ if __name__ == "__main__":
         run()
     elif sys.argv[1] == "clean":
         clean()
+    if __name__ == "__main__":
+        import sys
+
+        if len(sys.argv) < 2:
+                print("請使用 python run.py run 或 python run.py clean")
+        elif sys.argv[1] == "run":
+                run()
+                input("按 Enter 鍵退出...")
+        elif sys.argv[1] == "clean":
+                clean()
+                input("按 Enter 鍵退出...")

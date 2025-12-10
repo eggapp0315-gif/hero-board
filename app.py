@@ -1,10 +1,13 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, Response, send_from_directory
+from flask import Flask, request, render_template, redirect, url_for, flash, Response, send_from_directory, abort
+import  logging
 from datetime import datetime
 import os
 import configparser
 
 app = Flask(__name__)
 
+log = logging.getLogger('werkzeug')
+log.disabled = True
 # 讀 config.ini
 config = configparser.ConfigParser()
 config_path = os.path.join(os.path.dirname(__file__), "config.ini")
@@ -42,6 +45,16 @@ def log_visit(path="/"):
     line = f"{now}\t{ip}\t{path}\t{ua}\n"
     with open(VISITORS_FILE, "a", encoding="utf-8") as f:
         f.write(line)
+
+
+
+
+@app.before_request
+def block_invalid_protocol():
+    try:
+        request.data  # 強制解析
+    except Exception:
+        return abort(400)
 
 
 @app.route('/home/google77b51b745d5d14fa.html')

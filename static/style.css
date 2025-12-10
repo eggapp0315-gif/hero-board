@@ -118,6 +118,28 @@ main {
     transform: scale(1.05);    /* 放大一點 */
 }
 
+.buttonback {
+    position: fixed;      /* 固定在畫面上 */
+    bottom: 20px;         /* 距離底部 20px */
+    right: 20px;          /* 距離右邊 20px */
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 9999;        /* 確保在最上層 */
+}
+
+
+/* 滑鼠移到按鈕 */
+.buttonback:hover {
+    background-color: #222;
+    color: white;
+    transform: scale(1.05);    /* 放大一點 */
+
 h1, h2 {
     font-weight: 600;
     color: #111;

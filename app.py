@@ -81,6 +81,15 @@ def teacher(name):
     log_visit(f"/{name}")
     return render_template("teacher.html", name=name)
 
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, "static"),
+        "favicon.ico",
+        mimetype="image/vnd.microsoft.icon"
+    )
+
+
 @app.route('/home/google77b51b745d5d14fa.html')
 def google_verify_home():
     return send_from_directory('.', 'google77b51b745d5d14fa.html')

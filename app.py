@@ -49,7 +49,12 @@ app.secret_key = config["app"]["secret_key"]
 @app.route("/")
 def index():
     log_visit("/")
-    return redirect(url_for("home"))
+    return redirect("/home", code=301)
+
+@app.route("/home/")
+def home_slash():
+    log_visit("/home/")
+    return redirect("/home", code=301)
 
 @app.route("/home")
 def home():
